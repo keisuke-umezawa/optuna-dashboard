@@ -235,6 +235,8 @@ export const actionCreator = () => {
   }
 
   const updateStudyDetail = (studyId: number) => {
+    if (isReloading) return
+    setReloading(true)
     let nLocalFixedTrials = 0
     if (studyId in studyDetails) {
       const currentTrials = studyDetails[studyId].trials
@@ -252,6 +254,7 @@ export const actionCreator = () => {
             : []
         study.trials = currentFixedTrials.concat(study.trials)
         setStudyDetailState(studyId, study)
+        setReloading(false)
       })
       .catch((err) => {
         const reason = err.response?.data.reason
@@ -261,6 +264,7 @@ export const actionCreator = () => {
           })
         }
         console.log(err)
+        setReloading(false)
       })
   }
 
@@ -666,8 +670,6 @@ export const actionCreator = () => {
   const restorePreferentialHistory = (studyId: number, historyId: string) => {
     restorePreferentialHistoryAPI(studyId, historyId)
       .then(() => {
-        if (isReloading) return
-        setReloading(true)
         const newStudy = Object.assign({}, studyDetails[studyId])
         newStudy.preference_history = newStudy.preference_history?.map((h) =>
           h.id === historyId ? { ...h, is_removed: false } : h
@@ -677,7 +679,6 @@ export const actionCreator = () => {
           .pop()?.preferences
         newStudy.preferences = newStudy.preferences?.concat(restored ?? [])
         setStudyDetailState(studyId, newStudy)
-        setReloading(false)
       })
       .catch((err) => {
         const reason = err.response?.data.reason
