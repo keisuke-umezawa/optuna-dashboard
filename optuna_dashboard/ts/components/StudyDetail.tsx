@@ -61,7 +61,8 @@ export const StudyDetail: FC<{
     studyName !== null ? `${studyName} (id=${studyId})` : `Study #${studyId}`
 
   useEffect(() => {
-    action.updateStudyDetail(studyId)
+    action.loadReloadInterval()
+    action.updateStudyDetail(studyId, true)
     action.updateAPIMeta()
   }, [])
 
