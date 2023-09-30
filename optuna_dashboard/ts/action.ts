@@ -28,6 +28,7 @@ import {
   artifactIsAvailable,
   plotlypyIsAvailableState,
   reloadIntervalState,
+  reloadingState,
   trialsUpdatingState,
   studySummariesLoadingState,
 } from "./state"
@@ -41,6 +42,9 @@ export const actionCreator = () => {
   const [studyDetails, setStudyDetails] =
     useRecoilState<StudyDetails>(studyDetailsState)
   const setReloadInterval = useSetRecoilState<number>(reloadIntervalState)
+  const [isReloading, setReloading] = useRecoilState<boolean>(reloadingState)
+  const [paramImportance, setParamImportance] =
+    useRecoilState<StudyParamImportance>(paramImportanceState)
   const setUploading = useSetRecoilState<boolean>(isFileUploading)
   const setTrialsUpdating = useSetRecoilState(trialsUpdatingState)
   const setArtifactIsAvailable = useSetRecoilState<boolean>(artifactIsAvailable)
@@ -662,6 +666,8 @@ export const actionCreator = () => {
   const restorePreferentialHistory = (studyId: number, historyId: string) => {
     restorePreferentialHistoryAPI(studyId, historyId)
       .then(() => {
+        if (isReloading) return
+        setReloading(true)
         const newStudy = Object.assign({}, studyDetails[studyId])
         newStudy.preference_history = newStudy.preference_history?.map((h) =>
           h.id === historyId ? { ...h, is_removed: false } : h
@@ -671,6 +677,7 @@ export const actionCreator = () => {
           .pop()?.preferences
         newStudy.preferences = newStudy.preferences?.concat(restored ?? [])
         setStudyDetailState(studyId, newStudy)
+        setReloading(false)
       })
       .catch((err) => {
         const reason = err.response?.data.reason
