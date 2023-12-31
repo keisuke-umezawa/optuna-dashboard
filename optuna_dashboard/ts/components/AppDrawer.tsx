@@ -2,6 +2,7 @@ import React, { FC } from "react"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles"
 import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
 import MuiDrawer from "@mui/material/Drawer"
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar"
 import Toolbar from "@mui/material/Toolbar"
@@ -14,6 +15,7 @@ import ListItem from "@mui/material/ListItem"
 import ListItemButton from "@mui/material/ListItemButton"
 import ListItemIcon from "@mui/material/ListItemIcon"
 import ListItemText from "@mui/material/ListItemText"
+import { Settings } from "./Settings"
 import {
   drawerOpenState,
   reloadIntervalState,
@@ -29,6 +31,8 @@ import Brightness7Icon from "@mui/icons-material/Brightness7"
 import TableViewIcon from "@mui/icons-material/TableView"
 import RateReviewIcon from "@mui/icons-material/RateReview"
 import SettingsIcon from "@mui/icons-material/Settings"
+import Popover from "@mui/material/Popover"
+import Typography from "@mui/material/Typography"
 
 import MenuIcon from "@mui/icons-material/Menu"
 import GitHubIcon from "@mui/icons-material/GitHub"
@@ -162,6 +166,19 @@ export const AppDrawer: FC<{
   const handleDrawerClose = () => {
     setOpen(false)
   }
+
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const opened = Boolean(anchorEl)
+  const id = opened ? "simple-popover" : undefined
 
   return (
     <Box sx={{ display: "flex", width: "100%" }}>
@@ -303,19 +320,6 @@ export const AppDrawer: FC<{
                 <ListItemText primary="Note" sx={styleListItemText} />
               </ListItemButton>
             </ListItem>
-            <ListItem key="Settings" disablePadding sx={styleListItem}>
-              <ListItemButton
-                component={Link}
-                to={`${URL_PREFIX}/studies/${studyId}/settings`}
-                sx={styleListItemButton}
-                selected={page === "settings"}
-              >
-                <ListItemIcon sx={styleListItemIcon}>
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Settings" sx={styleListItemText} />
-              </ListItemButton>
-            </ListItem>
           </List>
         )}
         <Box sx={{ flexGrow: 1 }} />
@@ -344,6 +348,26 @@ export const AppDrawer: FC<{
               </ListItemButton>
             </ListItem>
           )}
+          <ListItem key="Settings" disablePadding sx={styleListItem}>
+            <Button onClick={handleClick}>
+              <ListItemIcon sx={styleListItemIcon}>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Settings" sx={styleListItemText} />
+            </Button>
+            <Popover
+              id={id}
+              open={opened}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: "center",
+                horizontal: "left",
+              }}
+            >
+              <Settings />
+            </Popover>
+          </ListItem>
           <ListItem key="DarkMode" disablePadding sx={styleListItem}>
             <ListItemButton
               sx={styleListItemButton}
