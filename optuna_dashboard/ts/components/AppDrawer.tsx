@@ -52,7 +52,6 @@ export type PageId =
   | "trialTable"
   | "trialList"
   | "note"
-  | "settings"
   | "preferenceHistory"
   | "graph"
 
@@ -349,12 +348,17 @@ export const AppDrawer: FC<{
             </ListItem>
           )}
           <ListItem key="Settings" disablePadding sx={styleListItem}>
-            <Button onClick={handleClick}>
+            <ListItemButton
+              sx={styleListItemButton}
+              onClick={(e) => {
+                handleClick(e)
+              }}
+            >
               <ListItemIcon sx={styleListItemIcon}>
                 <SettingsIcon />
               </ListItemIcon>
               <ListItemText primary="Settings" sx={styleListItemText} />
-            </Button>
+            </ListItemButton>
             <Popover
               id={id}
               open={opened}
